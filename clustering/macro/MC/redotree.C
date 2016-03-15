@@ -281,8 +281,8 @@ void SimulateTime(){
     dxtt = dxt;
     dztt = dzt;
 
-    if(detId0[4] != detId[4]) dxtt += 2.5*(detId[4] - detId0[4]);
-    if(detId0[3] != detId[3]) dztt += 3.5*(detId[3] - detId0[3]);
+    if(detId0[4] != detId[4]) dxtt -= 2.5*(detId[4] - detId0[4]);
+    if(detId0[3] != detId[3]) dztt -= 3.5*(detId[3] - detId0[3]);
 
     if(detId[3]==1) dztt*=-1;
 
