@@ -79,7 +79,7 @@ TH2F *h2t1_TOT_deff= new TH2F("h2t1_TOT_deff" , "TOT vs deff",50, 0. , 10., 50, 
     Float_t secAngle;
     Float_t cval[5];
     Float_t thetay;
-
+    Float_t StartTime,StartTimeRes;
     
     //T->Branch("nevento",&nevento,"nevento/I");
     //T->SetBranchAddress("ntracks",&ntracks);
@@ -99,6 +99,8 @@ TH2F *h2t1_TOT_deff= new TH2F("h2t1_TOT_deff" , "TOT vs deff",50, 0. , 10., 50, 
     T->SetBranchAddress("secPhi",&secAngle);
     T->SetBranchAddress("cval",cval);
     T->SetBranchAddress("thetay",&thetay);
+    T->SetBranchAddress("StartTime",&StartTime);
+    T->SetBranchAddress("StartTimeRes",&StartTimeRes);
 
     
     Int_t nentries = (Int_t)T->GetEntries();
@@ -107,6 +109,9 @@ for(Int_t i=0;i<nentries;i++)
 {
     T->GetEntry(i);
     
+    for(Int_t ip=0;ip<ncluster;ip)
+      tempo[ip] -= StartTime;
+
     if(ncluster == 1)
     {
     if(impulso_trasv>0.8 && impulso_trasv<1.) // serve per gli exp time

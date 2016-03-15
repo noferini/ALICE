@@ -111,7 +111,7 @@ TH2F *h2DxM_diffnTOTMm= new TH2F("h2DxM_diffnTOTMm" , " dxM vs diffnTOTMm",25, 0
     Float_t secAngle;
     Float_t cval[5];
     Float_t thetay;
-
+    Float_t StartTime,StartTimeRes;
     
     //T->Branch("nevento",&nevento,"nevento/I");
     //T->SetBranchAddress("ntracks",&ntracks);
@@ -131,6 +131,8 @@ TH2F *h2DxM_diffnTOTMm= new TH2F("h2DxM_diffnTOTMm" , " dxM vs diffnTOTMm",25, 0
     T->SetBranchAddress("secPhi",&secAngle);
     T->SetBranchAddress("cval",cval);
     T->SetBranchAddress("thetay",&thetay);
+    T->SetBranchAddress("StartTime",&StartTime);
+    T->SetBranchAddress("StartTimeRes",&StartTimeRes);
 
 
 
@@ -146,6 +148,9 @@ for(Int_t i=0;i<nentries;i++)
     
     T->GetEntry(i);
     
+    for(Int_t ip=0;ip < ncluster;ip++)
+      tempo[ip] -= StartTime;
+
     ntotcl++;
     
     if(ncluster == 2)
