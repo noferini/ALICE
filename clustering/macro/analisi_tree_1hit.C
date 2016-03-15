@@ -109,7 +109,7 @@ for(Int_t i=0;i<nentries;i++)
 {
     T->GetEntry(i);
     
-    for(Int_t ip=0;ip<ncluster;ip)
+    for(Int_t ip=0;ip<ncluster;ip++)
       tempo[ip] -= StartTime;
 
     if(ncluster == 1)
