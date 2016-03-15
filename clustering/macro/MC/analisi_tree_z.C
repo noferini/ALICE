@@ -245,8 +245,8 @@ for(Int_t i=0;i<nentries;i++)
               //if(TMath::Abs(DeltaZ[0]-DeltaZ[1])<=0.5) // perchè così dovrebbero provenire(credo) da stesso cluster in quanto, se così è , essendo loro adiacenti sulle x, dovrebbero avere circe dtesso residuo in z. NON sono sicura sia necessario fare ciò. // non dovrebbe più servire perchè ho modificato Check ESD spostando i residui dentro l'if
                   
               //h2resz->Fill(DeltaZ[0],DeltaZ[1]);
-              Float_t tw1=tempo[0]- gtime[0];
-              Float_t tw2=tempo[1]- gtime[1]/*/L[0]*L[1]*/; //non metto exp_time_pi[1] poichè momentaneamente non va
+              Float_t tw1=tempo[0]- gtime;
+              Float_t tw2=tempo[1]- gtime/*/L[0]*L[1]*/; //non metto exp_time_pi[1] poichè momentaneamente non va
              
            
 
@@ -317,8 +317,8 @@ for(Int_t i=0;i<nentries;i++)
             Float_t posz = (DeltaZ[0])*(ChannelTOF[0]-ChannelTOF[1])/48;
             Float_t  posz2 = (-3.5*(ChannelTOF[0]-ChannelTOF[1])/48 + (DeltaZ[1]))*(ChannelTOF[0]-ChannelTOF[1])/48;
             
-            Float_t tw1=tempo[0]- gtime[0];
-            Float_t tw2=tempo[1]- gtime[1];
+            Float_t tw1=tempo[0]- gtime;
+            Float_t tw2=tempo[1]- gtime;
             
             Float_t tw1corr=tw1-(offset_p1 + x1_p1 *posz);
             Float_t tw2corr=tw2-(offset_p2 + x2_p2 *posz);
@@ -401,8 +401,8 @@ for(Int_t i=0;i<nentries;i++)
                         Float_t posz = (DeltaZ[0])*(ChannelTOF[0]-ChannelTOF[1])/48;
                         Float_t  posz2 = (-3.5*(ChannelTOF[0]-ChannelTOF[1])/48 + (DeltaZ[1]))*(ChannelTOF[0]-ChannelTOF[1])/48;
                         
-                        Float_t tw1=tempo[0]- gtime[0];
-                        Float_t tw2=tempo[1]- gtime[1];
+                        Float_t tw1=tempo[0]- gtime;
+                        Float_t tw2=tempo[1]- gtime;
                         
                         Float_t tw1corr=tw1-(offset_p1 + x1_p1 *posz);
                         Float_t tw2corr=tw2-(offset_p2 + x2_p2 *posz);
