@@ -168,7 +168,7 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
 	//Int_t dch = TMath::Abs(ChannelTOF[0]-ChannelTOF[1]);
 	Int_t dch = ChannelTOF[0]-ChannelTOF[1];
         
-	if((ChannelTOF[0]/96)==(ChannelTOF[1]/96) /* così sono nella stessa strip && (ChannelTOF[0]/8)==(ChannelTOF[1]/8) /*così prendo stesso NINO, per vedere cross talk*/ ){
+	if((ChannelTOF[0]/96)==(ChannelTOF[1]/96) /* così sono nella stessa strip*/ && (ChannelTOF[0]/8)==(ChannelTOF[1]/8) /*così prendo stesso NINO, per vedere cross talk*/ ){
 	  if( TMath::Abs(DeltaZ[0])<1.75 ){ //prendo che il pad machato sia dentro lungo le z
 	    
 	    if(TMath::Abs(dch) == 1 /* seleziono x adiacenti*/ && TMath::Abs(tempo[0]-exp_time_pi[0])<800./* per avere circa 3 sigma che sia un pi*/ && TMath::Abs(tempo[0] - tempo[1])<470.){// poi dovrei farlo anche per 1
