@@ -265,6 +265,9 @@ void analisi_tree_1hit(){ //faccio gli istogrammi dal Tree T creato nel file Che
   for(Int_t i=0;i<nentries;i++){
     T->GetEntry(i);
     
+    for(Int_t ip=0;ip<ncluster;ip++)
+      tempo[ip] -= StartTime;
+
     if(ncluster == 1) {
       if(impulso_trasv>0.8 && impulso_trasv<1.){ // serve per gli exp time
 	if(TMath::Abs(tempo[0]-exp_time_pi[0])<800./* per avere circa 3 sigma che sia un pi*/ ){
@@ -319,6 +322,9 @@ void analisi_tree_1hit(){ //faccio gli istogrammi dal Tree T creato nel file Che
   for(Int_t i=0;i<nentries;i++){
     T->GetEntry(i);
     
+    for(Int_t ip=0;ip<ncluster;ip++)
+      tempo[ip] -= StartTime;
+    
     if(ncluster == 1){
       if(impulso_trasv>0.8 && impulso_trasv<1.){ // serve per gli exp time
 	if(TMath::Abs(tempo[0]-exp_time_pi[0])<800./* per avere circa 3 sigma che sia un pi*/ ){                   
@@ -368,6 +374,8 @@ void analisi_tree_1hit(){ //faccio gli istogrammi dal Tree T creato nel file Che
   //    for(Int_t i=0;i<nentries;i++)
   //    {
   //        T->GetEntry(i);
+  //    for(Int_t ip=0;ip<ncluster;ip++)
+  //      tempo[ip] -= StartTime;
   //        if(ncluster == 1)
   //        {
   //        if(impulso_trasv>0.8 && impulso_trasv<1.2) // serve per gli exp time

@@ -402,6 +402,9 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
   for (Int_t nu=0 ; nu<nentries ; nu++){
     T->GetEntry(nu);
     
+    for(Int_t ip=0;ip < ncluster;ip++)
+      tempo[ip] -= StartTime;
+
     if(ncluster == 2){
       if(impulso_trasv>0.8 && impulso_trasv<1.2){ // serve per gli exp time
         if((ChannelTOF[0]/96)==(ChannelTOF[1]/96) /*&& (ChannelTOF[0]/8)==(ChannelTOF[1])*/){ // così sono nella stessa strip
@@ -466,6 +469,9 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
   for (Int_t nu=0 ; nu<nentries ; nu++){
     T->GetEntry(nu);
     
+    for(Int_t ip=0;ip < ncluster;ip++)
+      tempo[ip] -= StartTime;
+
     if(ncluster == 2) {
       if(impulso_trasv>0.8 && impulso_trasv<1.2){ // serve per gli exp time
 	if((ChannelTOF[0]/96)==(ChannelTOF[1]/96)/* && (ChannelTOF[0]/8)==(ChannelTOF[1])*/){ // così sono nella stessa strip

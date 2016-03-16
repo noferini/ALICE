@@ -348,7 +348,10 @@ void analisi_tree_z(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
   
   for (Int_t nu=0 ; nu<nentries ; nu++) {
     T->GetEntry(nu);
-    
+ 
+    for(Int_t ip=0;ip < ncluster;ip++)
+      tempo[ip] -= StartTime;
+   
     if(ncluster == 2){
       if(impulso_trasv>0.8 && impulso_trasv<1.2){ // serve per gli exp time
 	if((ChannelTOF[0]/96)==(ChannelTOF[1]/96)){
@@ -421,7 +424,10 @@ void analisi_tree_z(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
   for (Int_t nu=0 ; nu<nentries ; nu++){
     T->GetEntry(nu);
     
-    if(ncluster == 2){
+    for(Int_t ip=0;ip < ncluster;ip++)
+      tempo[ip] -= StartTime;
+
+   if(ncluster == 2){
       if(impulso_trasv>0.8 && impulso_trasv<1.2){ // serve per gli exp time
         
         if((ChannelTOF[0]/96)==(ChannelTOF[1]/96)){
