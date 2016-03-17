@@ -17,6 +17,17 @@ void analisi_tree_z(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
   gStyle->SetOptStat(0012);
   gStyle->SetOptFit(0111);
   
+  Bool_t kCal=kFALSE;
+  
+  TFile *fcal = TFile::Open("calibration.root");
+  TProfile *hCalX;
+  TProfile *hCalZ;
+  if(fcal){
+    kCal=kTRUE;
+    hCalX = (TProfile *) fcal->Get("hCalX");
+    hCalZ = (TProfile *) fcal->Get("hCalZ");
+  }
+
   // definire istogrammi (ricordarsi di fare il write nel file successivamente)
   //TH1F *hdeltat = new TH1F("hdeltat","inside the pad (cl_{1}) - cluster along x;t_{1} - t_{2} (ps)",400,-500,500);
   TH1F *hdeltaz = new TH1F("hdeltaz","inside the pad (cl_{1}) - cluster along z;#Deltaz_{1} - #Deltaz_{2} (cm)",100,-10,10);
@@ -140,8 +151,15 @@ void analisi_tree_z(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
   for(Int_t i=0;i<nentries;i++){
     T->GetEntry(i);
     
-    for(Int_t ip=0;ip < ncluster;ip++)
+    for(Int_t ip=0;ip<ncluster;ip++){
       tempo[ip] -= StartTime;
+      Int_t strip=ChannelTOF[0]/96;
+      if(kCal){
+	DeltaX[ip] -= hCalX->GetBinContent(strip+1);
+	DeltaZ[ip] -= hCalZ->GetBinContent(strip+1);
+
+      }
+    }
     
     if(ncluster == 2) {
       if(impulso_trasv>0.8 && impulso_trasv<1.2){ // serve per gli exp time
@@ -349,8 +367,15 @@ void analisi_tree_z(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
   for (Int_t nu=0 ; nu<nentries ; nu++) {
     T->GetEntry(nu);
  
-    for(Int_t ip=0;ip < ncluster;ip++)
+    for(Int_t ip=0;ip<ncluster;ip++){
       tempo[ip] -= StartTime;
+      Int_t strip=ChannelTOF[0]/96;
+      if(kCal){
+	DeltaX[ip] -= hCalX->GetBinContent(strip+1);
+	DeltaZ[ip] -= hCalZ->GetBinContent(strip+1);
+
+      }
+    }
    
     if(ncluster == 2){
       if(impulso_trasv>0.8 && impulso_trasv<1.2){ // serve per gli exp time
@@ -424,8 +449,15 @@ void analisi_tree_z(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
   for (Int_t nu=0 ; nu<nentries ; nu++){
     T->GetEntry(nu);
     
-    for(Int_t ip=0;ip < ncluster;ip++)
+    for(Int_t ip=0;ip<ncluster;ip++){
       tempo[ip] -= StartTime;
+      Int_t strip=ChannelTOF[0]/96;
+      if(kCal){
+	DeltaX[ip] -= hCalX->GetBinContent(strip+1);
+	DeltaZ[ip] -= hCalZ->GetBinContent(strip+1);
+
+      }
+    }
 
    if(ncluster == 2){
       if(impulso_trasv>0.8 && impulso_trasv<1.2){ // serve per gli exp time

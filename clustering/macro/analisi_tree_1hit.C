@@ -16,6 +16,25 @@ void analisi_tree_1hit(){ //faccio gli istogrammi dal Tree T creato nel file Che
   gROOT->Reset();
   gStyle->SetOptStat(0012);
   gStyle->SetOptFit(0111);
+
+  Bool_t kCal=kFALSE;
+
+  TFile *fcal = TFile::Open("calibration.root");
+  TProfile *hCalX;
+  TProfile *hCalZ;
+  if(fcal){
+    kCal=kTRUE;
+    hCalX = (TProfile *) fcal->Get("hCalX");
+    hCalZ = (TProfile *) fcal->Get("hCalZ");
+  }
+  else{
+    hCalX= new TProfile("hCalX","x alignement per strip;# strip;#DeltaX (cm)",1700,0,1700);
+    hCalZ= new TProfile("hCalZ","z alignement per strip;# strip;#DeltaX (cm)",1700,0,1700);
+  }
+
+  // check alignment
+  TProfile *hx = new TProfile("hx","x alignement per strip;# strip;#DeltaX (cm)",1700,0,1700);
+  TProfile *hz = new TProfile("hz","z alignement per strip;# strip;#DeltaZ (cm)",1700,0,1700);
   
   // definire istogrammi (ricordarsi di fare il write nel file successivamente)
   //TH1F *hdeltat = new TH1F("hdeltat","inside the pad (cl_{1}) - cluster along x;t_{1} - t_{2} (ps)",400,-500,500);
@@ -123,10 +142,28 @@ void analisi_tree_1hit(){ //faccio gli istogrammi dal Tree T creato nel file Che
   for(Int_t i=0;i<nentries;i++) {
     T->GetEntry(i);
     
-    for(Int_t ip=0;ip<ncluster;ip++)
+    for(Int_t ip=0;ip<ncluster;ip++){
       tempo[ip] -= StartTime;
+      Int_t strip=ChannelTOF[0]/96;
+      if(kCal){
+	DeltaX[ip] -= hCalX->GetBinContent(strip+1);
+	DeltaZ[ip] -= hCalZ->GetBinContent(strip+1);
+
+      }
+    }
     
     if(ncluster == 1){
+      
+      if(impulso_trasv>1.3){
+	hx->Fill(int(ChannelTOF[0]/96),DeltaX[0]);
+	hz->Fill(int(ChannelTOF[0]/96),DeltaZ[0]);
+
+	if(!kCal){
+	  hCalX->Fill(int(ChannelTOF[0]/96),DeltaX[0]);
+	  hCalZ->Fill(int(ChannelTOF[0]/96),DeltaZ[0]);	  
+	}
+      }
+
       if(impulso_trasv>0.8 && impulso_trasv<1.){ // serve per gli exp time
 	//if( TMath::Abs(DeltaZ[0])<1.75){
 	
@@ -265,8 +302,15 @@ void analisi_tree_1hit(){ //faccio gli istogrammi dal Tree T creato nel file Che
   for(Int_t i=0;i<nentries;i++){
     T->GetEntry(i);
     
-    for(Int_t ip=0;ip<ncluster;ip++)
+    for(Int_t ip=0;ip<ncluster;ip++){
       tempo[ip] -= StartTime;
+      Int_t strip=ChannelTOF[0]/96;
+      if(kCal){
+	DeltaX[ip] -= hCalX->GetBinContent(strip+1);
+	DeltaZ[ip] -= hCalZ->GetBinContent(strip+1);
+
+      }
+    }
 
     if(ncluster == 1) {
       if(impulso_trasv>0.8 && impulso_trasv<1.){ // serve per gli exp time
@@ -322,8 +366,15 @@ void analisi_tree_1hit(){ //faccio gli istogrammi dal Tree T creato nel file Che
   for(Int_t i=0;i<nentries;i++){
     T->GetEntry(i);
     
-    for(Int_t ip=0;ip<ncluster;ip++)
+    for(Int_t ip=0;ip<ncluster;ip++){
       tempo[ip] -= StartTime;
+      Int_t strip=ChannelTOF[0]/96;
+      if(kCal){
+	DeltaX[ip] -= hCalX->GetBinContent(strip+1);
+	DeltaZ[ip] -= hCalZ->GetBinContent(strip+1);
+
+      }
+    }
     
     if(ncluster == 1){
       if(impulso_trasv>0.8 && impulso_trasv<1.){ // serve per gli exp time
@@ -441,7 +492,17 @@ void analisi_tree_1hit(){ //faccio gli istogrammi dal Tree T creato nel file Che
   hproft1_texp_TOT->Write();
   h2t1_deff_TOT->Write();
   h2t1_TOT_deff->Write();
+  hx->Write();
+  hz->Write();
   fo2->Close();
   
+  if(!kCal){
+    printf("write calibration\n");
+    fcal = new TFile("calibration.root","RECREATE");
+    hCalX->Write();
+    hCalZ->Write();
+    fcal->Close();
+  }
+
   system("say Ehi you, I have done");
 }
