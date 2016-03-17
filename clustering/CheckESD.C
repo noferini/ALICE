@@ -49,6 +49,7 @@ Float_t exp_time_pi[100];
 Float_t exp_time_ka[100];
 Float_t exp_time_pr[100],rTOFused;
 Float_t L[100];
+Float_t tot[100];
 Float_t impulso_trasv;
 Float_t impulso;
 Float_t res[3];
@@ -62,7 +63,6 @@ Float_t dedx,StartTime,StartTimeRes;
 Float_t interactiontime;
 Int_t itrig;
 Float_t timetrig;
-
 Float_t smearX = 0.;
 Float_t smearZ = 0.;
 
@@ -100,6 +100,7 @@ char name[300];
     T->Branch("exp_time_ka",exp_time_ka,"exp_time_ka[ncluster]/F");
     T->Branch("exp_time_pr",exp_time_pr,"exp_time_pr[ncluster]/F");
     T->Branch("L",L,"L[ncluster]/F");
+    T->Branch("TOT",tot,"TOT[ncluster]/F");
     T->Branch("ChannelTOF",ChannelTOF,"ChannelTOF[ncluster]/I");
     T->Branch("impulso",&impulso,"impulso/F");
     T->Branch("impulso_trasv",&impulso_trasv,"impulso_trasv/F");
@@ -232,7 +233,7 @@ Bool_t CheckSingle(const char* esdFileName,Bool_t kGRID)
   if(isMC) fgalice = TFile::Open(fgal.Data());
   TTree *tgalice;
   if(isMC){
-     tgalice = fgalice->Get("TE");
+     tgalice = (TTree *) fgalice->Get("TE");
      tgalice->SetBranchAddress("Header",&h);
   }
 
@@ -385,6 +386,7 @@ Bool_t CheckSingle(const char* esdFileName,Bool_t kGRID)
           AliESDTOFCluster *cl = tofcl->At(idummy);
           
           tempo[i]=cl->GetTime();
+          tot[i]=cl->GetTOT();
          
           ChannelTOF[i]=cl->GetTOFchannel();
 
