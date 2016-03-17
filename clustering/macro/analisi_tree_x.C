@@ -163,7 +163,7 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
   for(Int_t i=0;i<nentries;i++){
     
     T->GetEntry(i);
-    if(StartTimeRes > 10) continue;
+//     if(StartTimeRes > 10) continue;
 
     for(Int_t ip=0;ip<ncluster;ip++){
       tempo[ip] -= StartTime;
@@ -420,7 +420,7 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
   
   for (Int_t nu=0 ; nu<nentries ; nu++){
     T->GetEntry(nu);
-        if(StartTimeRes > 10) continue;
+    //if(StartTimeRes > 10) continue;
 
     for(Int_t ip=0;ip<ncluster;ip++){
       tempo[ip] -= StartTime;
@@ -495,7 +495,7 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
   
   for (Int_t nu=0 ; nu<nentries ; nu++){
     T->GetEntry(nu);
-        if(StartTimeRes > 10) continue;
+    //        if(StartTimeRes > 10) continue;
 
     for(Int_t ip=0;ip<ncluster;ip++){
       tempo[ip] -= StartTime;
