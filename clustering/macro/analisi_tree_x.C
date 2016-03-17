@@ -120,6 +120,7 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
   Float_t tempo[100];//con start time sottratto
   Float_t DeltaX[100];
   Float_t DeltaZ[100];
+
   Int_t ChannelTOF[100];
   Float_t impulso_trasv;
   Float_t exp_time_pi[100];
@@ -171,10 +172,31 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
       if(kCal){
 	DeltaX[ip] -= hCalX->GetBinContent(strip+1);
 	DeltaZ[ip] -= hCalZ->GetBinContent(strip+1);
-
       }
     }
-    
+
+    if(kCal && ncluster==2){ // check again the residual
+      if(DeltaX[0]*DeltaX[0] > DeltaX[1]*DeltaX[1]){
+	ChannelTOF[99] = ChannelTOF[0];
+	tempo[99] = tempo[0];
+	DeltaX[99] = DeltaX[0];
+	DeltaZ[99] = DeltaZ[0];
+	TOT[99] = TOT[0];
+
+	ChannelTOF[0] = ChannelTOF[1];
+	tempo[0] = tempo[1];
+	DeltaX[0] = DeltaX[1];
+	DeltaZ[0] = DeltaZ[1];
+	TOT[0] = TOT[1];
+
+	ChannelTOF[1] = ChannelTOF[9];
+	tempo[1] = tempo[9];
+	DeltaX[1] = DeltaX[9];
+	DeltaZ[1] = DeltaZ[9];
+	TOT[1] = TOT[9];
+      }
+    }
+
     ntotcl++;
     
     if(ncluster == 2){
@@ -428,7 +450,28 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
       if(kCal){
 	DeltaX[ip] -= hCalX->GetBinContent(strip+1);
 	DeltaZ[ip] -= hCalZ->GetBinContent(strip+1);
+      }
+    }
 
+    if(kCal && ncluster==2){ // check again the residual
+      if(DeltaX[0]*DeltaX[0] > DeltaX[1]*DeltaX[1]){
+	ChannelTOF[99] = ChannelTOF[0];
+	tempo[99] = tempo[0];
+	DeltaX[99] = DeltaX[0];
+	DeltaZ[99] = DeltaZ[0];
+	TOT[99] = TOT[0];
+
+	ChannelTOF[0] = ChannelTOF[1];
+	tempo[0] = tempo[1];
+	DeltaX[0] = DeltaX[1];
+	DeltaZ[0] = DeltaZ[1];
+	TOT[0] = TOT[1];
+
+	ChannelTOF[1] = ChannelTOF[9];
+	tempo[1] = tempo[9];
+	DeltaX[1] = DeltaX[9];
+	DeltaZ[1] = DeltaZ[9];
+	TOT[1] = TOT[9];
       }
     }
 
@@ -504,6 +547,28 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
 	DeltaX[ip] -= hCalX->GetBinContent(strip+1);
 	DeltaZ[ip] -= hCalZ->GetBinContent(strip+1);
 
+      }
+    }
+
+    if(kCal && ncluster==2){ // check again the residual
+      if(DeltaX[0]*DeltaX[0] > DeltaX[1]*DeltaX[1]){
+	ChannelTOF[99] = ChannelTOF[0];
+	tempo[99] = tempo[0];
+	DeltaX[99] = DeltaX[0];
+	DeltaZ[99] = DeltaZ[0];
+	TOT[99] = TOT[0];
+
+	ChannelTOF[0] = ChannelTOF[1];
+	tempo[0] = tempo[1];
+	DeltaX[0] = DeltaX[1];
+	DeltaZ[0] = DeltaZ[1];
+	TOT[0] = TOT[1];
+
+	ChannelTOF[1] = ChannelTOF[9];
+	tempo[1] = tempo[9];
+	DeltaX[1] = DeltaX[9];
+	DeltaZ[1] = DeltaZ[9];
+	TOT[1] = TOT[9];
       }
     }
 

@@ -160,7 +160,29 @@ void analisi_tree_z(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
 
       }
     }
-    
+
+    if(kCal && ncluster==2){ // check again the residual
+      if(DeltaZ[0]*DeltaZ[0] > DeltaZ[1]*DeltaZ[1]){
+	ChannelTOF[99] = ChannelTOF[0];
+	tempo[99] = tempo[0];
+	DeltaX[99] = DeltaX[0];
+	DeltaZ[99] = DeltaZ[0];
+	TOT[99] = TOT[0];
+
+	ChannelTOF[0] = ChannelTOF[1];
+	tempo[0] = tempo[1];
+	DeltaX[0] = DeltaX[1];
+	DeltaZ[0] = DeltaZ[1];
+	TOT[0] = TOT[1];
+
+	ChannelTOF[1] = ChannelTOF[9];
+	tempo[1] = tempo[9];
+	DeltaX[1] = DeltaX[9];
+	DeltaZ[1] = DeltaZ[9];
+	TOT[1] = TOT[9];
+      }
+    }
+   
     if(ncluster == 2) {
       if(impulso_trasv>0.8 && impulso_trasv<1.2){ // serve per gli exp time
 	//if(exp_time_pi[0] > 0. && exp_time_pi[1] > 0.)
@@ -377,6 +399,28 @@ void analisi_tree_z(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
       }
     }
    
+    if(kCal && ncluster==2){ // check again the residual
+      if(DeltaZ[0]*DeltaZ[0] > DeltaZ[1]*DeltaZ[1]){
+	ChannelTOF[99] = ChannelTOF[0];
+	tempo[99] = tempo[0];
+	DeltaX[99] = DeltaX[0];
+	DeltaZ[99] = DeltaZ[0];
+	TOT[99] = TOT[0];
+
+	ChannelTOF[0] = ChannelTOF[1];
+	tempo[0] = tempo[1];
+	DeltaX[0] = DeltaX[1];
+	DeltaZ[0] = DeltaZ[1];
+	TOT[0] = TOT[1];
+
+	ChannelTOF[1] = ChannelTOF[9];
+	tempo[1] = tempo[9];
+	DeltaX[1] = DeltaX[9];
+	DeltaZ[1] = DeltaZ[9];
+	TOT[1] = TOT[9];
+      }
+    }
+
     if(ncluster == 2){
       if(impulso_trasv>0.8 && impulso_trasv<1.2){ // serve per gli exp time
 	if((ChannelTOF[0]/96)==(ChannelTOF[1]/96)){
@@ -456,6 +500,28 @@ void analisi_tree_z(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
 	DeltaX[ip] -= hCalX->GetBinContent(strip+1);
 	DeltaZ[ip] -= hCalZ->GetBinContent(strip+1);
 
+      }
+    }
+
+    if(kCal && ncluster==2){ // check again the residual
+      if(DeltaZ[0]*DeltaZ[0] > DeltaZ[1]*DeltaZ[1]){
+	ChannelTOF[99] = ChannelTOF[0];
+	tempo[99] = tempo[0];
+	DeltaX[99] = DeltaX[0];
+	DeltaZ[99] = DeltaZ[0];
+	TOT[99] = TOT[0];
+
+	ChannelTOF[0] = ChannelTOF[1];
+	tempo[0] = tempo[1];
+	DeltaX[0] = DeltaX[1];
+	DeltaZ[0] = DeltaZ[1];
+	TOT[0] = TOT[1];
+
+	ChannelTOF[1] = ChannelTOF[9];
+	tempo[1] = tempo[9];
+	DeltaX[1] = DeltaX[9];
+	DeltaZ[1] = DeltaZ[9];
+	TOT[1] = TOT[9];
       }
     }
 
