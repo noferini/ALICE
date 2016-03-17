@@ -1,3 +1,14 @@
+#include "TFile.h"
+#include "TTree.h"
+#include "TBranch.h"
+#include "TLeaf.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TProfile.h"
+#include "AliTOFGeometry.h"
+#include "TRandom.h"
+#include "TMath.h"
+
 // definire istogrammi (ricordarsi di fare il write nel file successivamente)
 TH1F *hdt = new TH1F("hdtPi","pions 0.9 < p_{T} < 1.5 GeV/c;t - t_{exp}^{#pi}",100,-1000,1000);
 TH1F *hdtKa = new TH1F("hdtKa","kaons 0.9 < p_{T} < 1.5 GeV/c;t - t_{exp}^{K}",100,-1000,1000);
@@ -27,13 +38,8 @@ TH2F *h2resz = new TH2F("h2resz" , "Residui dz1 e dz2", 40, -10. , 10. , 40 , -1
 TH2F *h2resxz1 = new TH2F("h2resxz1" , "Residui dx1 e dz1", 40, -10. , 10. , 40 , -10. , 10.);
 TH2F *h2resxz2 = new TH2F("h2resxz2" , "Residui dx2 e dz2", 40, -10. , 10. , 40 , -10. , 10.);
 
-
-
 //File per il Tree T
-TFile *fotree = new TFile("AnalysisResults.root","RECREATE");
 //Tree di prova
-TTree *T = new TTree("T","test");
-
 
 //Varibili tree "T"
 //Int_t nevento;
@@ -61,7 +67,7 @@ Float_t dedx,StartTime,StartTimeRes;
 Float_t interactiontime;
 
 Float_t smearX = 0.2;
-Float_t smearZ = 1.5;
+Float_t smearZ = 0.5;
 
 void SimulateTime();
 void ReMatch();
@@ -75,15 +81,9 @@ void redotree(){
   hpx = (TProfile *) fcal->Get("hgeantXcal");
   hpz = (TProfile *) fcal->Get("hgeantZcal");
 
-  TChain *t = new TChain("T");
-  FILE *fin = fopen("lista","r");
-  char name[100];
-  Int_t nfile = 0;
-  while(fscanf(fin,"%s",name)==1 && nfile < 1000){
-    t->AddFile(name);
-    nfile++;
-  }
+  TFile *fin=new TFile("AnalysisResults.root");
 
+  TTree *t = (TTree *) fin->Get("T");
 
   TProfile *hx = new TProfile("hx","x alignement per strip;# strip;#DeltaX (cm)",1700,0,1700);
   TProfile *hz = new TProfile("hz","z alignement per strip;# strip;#DeltaZ (cm)",1700,0,1700);
@@ -118,7 +118,7 @@ void redotree(){
   t->SetBranchAddress("InteractionTime",&interactiontime);
 
 
-  TFile *fo = new TFile("output.root","RECREATE");
+  TFile *fo = new TFile("AnalysisResultsNew.root","RECREATE");
 
   TTree *T = new TTree("T","T");
   T->Branch("ncluster",&ncluster,"ncluster/I");
@@ -154,7 +154,7 @@ void redotree(){
   for(Int_t i=0;i < nev;i++){
     t->GetEvent(i);
 
-    if((i%1000)==0)printf("%i/%i\n",i,nev);
+    if((i%100000)==0)printf("%i/%i\n",i,nev);
 
     GetTrueCoord();
 
@@ -171,6 +171,7 @@ void redotree(){
     }
   }
 
+  printf("Write output\n");
   fo->cd();
   T->Write();
   hx->Write();
@@ -179,6 +180,7 @@ void redotree(){
   
 }
 void CalibrationGeant(){
+  if(!hpx) return;
   Int_t strip=ChannelTOF[0]/96;
   dxt -= hpx->GetBinContent(strip+1);
   dzt -= hpz->GetBinContent(strip+1);
