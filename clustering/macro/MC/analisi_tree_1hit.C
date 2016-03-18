@@ -132,6 +132,21 @@ void analisi_tree_1hit(){ //faccio gli istogrammi dal Tree T creato nel file Che
     T->GetEntry(i);
     
     if(ncluster == 1){
+      if(impulso_trasv>1.3){
+	h2resxz1->Fill(DeltaX[0],DeltaZ[0]);
+	h2resxz1->GetXaxis()->SetTitle("Dx1 (cm)");
+	h2resxz1->GetYaxis()->SetTitle("Dz1 (cm)");
+	
+	hresx1->Fill(DeltaX[0]);
+	hresx1->GetXaxis()->SetTitle("Dx1 (cm)");
+        
+	hresz1->Fill(DeltaZ[0]);
+	hresz1->GetXaxis()->SetTitle("Dz1 (cm)");
+        
+	hresdist1->Fill(sqrt(DeltaX[0]*DeltaX[0]+DeltaZ[0]*DeltaZ[0]));
+	hresdist1->GetXaxis()->SetTitle("sqrt(Dx^2+Dz^2) (cm)");
+      }
+
       if(impulso_trasv>0.8 && impulso_trasv<1.){ // serve per gli exp time
 	//if( TMath::Abs(DeltaZ[0])<1.75)
 	//{
@@ -175,21 +190,7 @@ void analisi_tree_1hit(){ //faccio gli istogrammi dal Tree T creato nel file Che
 	      cout<<"ciao, io ,pad 1, sono quello sopra"<<endl;
 	      }
 	      */
-	    }
-        
-	    h2resxz1->Fill(DeltaX[0],DeltaZ[0]);
-	    h2resxz1->GetXaxis()->SetTitle("Dx1 (cm)");
-	    h2resxz1->GetYaxis()->SetTitle("Dz1 (cm)");
-            
-	    hresx1->Fill(DeltaX[0]);
-	    hresx1->GetXaxis()->SetTitle("Dx1 (cm)");
-            
-	    hresz1->Fill(DeltaZ[0]);
-	    hresz1->GetXaxis()->SetTitle("Dz1 (cm)");
-            
-	    hresdist1->Fill(sqrt(DeltaX[0]*DeltaX[0]+DeltaZ[0]*DeltaZ[0]));
-	    hresdist1->GetXaxis()->SetTitle("sqrt(Dx^2+Dz^2) (cm)");
-	    
+	    }    
 	    
 	    Float_t res1 = DeltaX[0]*DeltaX[0] + DeltaZ[0]*DeltaZ[0];
 	    
