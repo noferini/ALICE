@@ -68,6 +68,8 @@ Float_t interactiontime;
 
 Float_t smearX = 0.2;
 Float_t smearZ = 0.5;
+Float_t tofres=90.;
+Float_t timewalk=41.;
 
 void SimulateTime();
 void ReMatch();
@@ -118,7 +120,7 @@ void redotree(){
   t->SetBranchAddress("InteractionTime",&interactiontime);
 
 
-  TFile *fo = new TFile("AnalysisResultsNew.root","RECREATE");
+  TFile *fo = new TFile("output.root","RECREATE");
 
   TTree *T = new TTree("T","T");
   T->Branch("ncluster",&ncluster,"ncluster/I");
@@ -275,7 +277,7 @@ void SimulateTime(){
   Float_t dxttFB,dzttFB;
   Float_t delayx,delayz,delay;
   Float_t resX,resZ,res;
-  Float_t avalanche = gRandom->Gaus(0,67);
+    Float_t avalanche = gRandom->Gaus(0,sqrt(tofres*tofres-44*44));//time walk ~ 41 ps-> 44 serve per correggere qiuesto
 
   for(Int_t i=0;i < ncluster;i++){
     AliTOFGeometry::GetVolumeIndices(ChannelTOF[i],detId);
@@ -294,7 +296,7 @@ void SimulateTime(){
 
 
     // time walk
-    tw = TMath::Sqrt(dxtt*dxtt + (dztt+1.75)*(dztt+1.75))*41 - 71;
+    tw = TMath::Sqrt(dxtt*dxtt + (dztt+1.75)*(dztt+1.75))*41 - timewalk*1.73;
 
     dxttFB = 1.25 - TMath::Abs(dxtt);
     dzttFB = 1.75 - TMath::Abs(dztt);
@@ -303,13 +305,13 @@ void SimulateTime(){
     if(dzttFB > 1) dzttFB = 1;
 
     // delay
-    delayx = 90*(1-dxttFB)*(1-dxttFB)*(1-dxttFB);
-    delayz = 90*(1-dzttFB)*(1-dzttFB)*(1-dzttFB);
-    delay = TMath::Max(delayx,delayz)-30;
+    delayx = 70*(1-dxttFB)*(1-dxttFB)*(1-dxttFB);
+    delayz = 70*(1-dzttFB)*(1-dzttFB)*(1-dzttFB);
+    delay = TMath::Max(delayx,delayz);
 
     // resolution degradation
-    resX = (1-dxttFB)*80;
-    resZ = (1-dzttFB)*80;
+    resX = (1-dxttFB)*(1-dxttFB)*130;
+    resZ = (1-dzttFB)*(1-dzttFB)*130;
     if(resX > resZ) res=resX;
     else res=resZ;
 

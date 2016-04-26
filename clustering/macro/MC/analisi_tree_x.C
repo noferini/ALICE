@@ -73,7 +73,7 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
   
   TH1F *htbestcorr = new TH1F("htbestcorr","htbestcorr",100,-2000.,2000.);
   
-  TFile *f = new TFile("AnalysisResultsNew.root");
+  TFile *f = new TFile("output.root");
   TTree *T = (TTree*)f->Get("T"); //in generale . (e non freccia) se Tfile è un oggetto e NON un puntatore(*)
   
   //Varibili tree "T"
@@ -150,9 +150,11 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
 	//Int_t dch = TMath::Abs(ChannelTOF[0]-ChannelTOF[1]);
 	Int_t dch = ChannelTOF[0]-ChannelTOF[1];
 	
-	if((ChannelTOF[0]/96)==(ChannelTOF[1]/96) /* così sono nella stessa strip*/ && (ChannelTOF[0]/8)==(ChannelTOF[1]/8) /*così prendo stesso NINO, per vedere cross talk*/ ){
+	if((ChannelTOF[0]/96)==(ChannelTOF[1]/96) /* così sono nella stessa strip*/
+	   && (ChannelTOF[0]/8)==(ChannelTOF[1]/8) /*così prendo stesso NINO, per vedere cross talk*/ ){
 	  if( TMath::Abs(DeltaZ[0])<1.75 ){ //prendo che il pad machato sia dentro lungo le z
-	    if(TMath::Abs(dch) == 1 /* seleziono x adiacenti*/ /*&& TMath::Abs(tempo[0]-exp_time_pi[0])<800. */ /* per avere circa 3 sigma che sia un pi*/ && TMath::Abs(tempo[0] - tempo[1])<470.){// poi dovrei farlo anche per 1
+	    if(TMath::Abs(dch) == 1 /* seleziono x adiacenti*/ /*&& TMath::Abs(tempo[0]-exp_time_pi[0])<800. */ /* per avere circa 3 sigma che sia un pi*/
+	       && TMath::Abs(tempo[0] - tempo[1])<470.){// poi dovrei farlo anche per 1
 	      // hexp_time_pi->Fill(exp_time_pi[0]);
 	      
 	      Float_t diff=tempo[0]-tempo[1];
@@ -365,8 +367,8 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
 	      Float_t posx = (DeltaX[0])* dch;
 	      Float_t  posx2 = (-2.5*(ChannelTOF[0]-ChannelTOF[1]) + (DeltaX[1]))*(ChannelTOF[0]-ChannelTOF[1]);
 	      
-	      Float_t tw1=tempo[0]- gtime;
-	      Float_t tw2=tempo[1]- gtime;
+	      Float_t tw1=tempo[0]-StartTime +interactiontime- gtime;
+	      Float_t tw2=tempo[1]-StartTime +interactiontime- gtime;
 	      
 	      Float_t tw1corr=tw1-(offset_p1 + x1_p1 *posx);
 	      Float_t tw2corr=tw2-(offset_p2 + x2_p2 *posx);
@@ -441,5 +443,5 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
   //hexp_time_pi->Write();
   fo2->Close();
   
-  system("say Ehi you, I have done");
+  system("echo Ehi you, I have done");
 }

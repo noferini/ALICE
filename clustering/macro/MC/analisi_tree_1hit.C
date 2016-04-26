@@ -65,7 +65,7 @@ void analisi_tree_1hit(){ //faccio gli istogrammi dal Tree T creato nel file Che
   TProfile *hprofdeff=new TProfile("hprofdeff","Profile t1-t_exp_pi vs deff",50, -3.,10.);
   
   
-  TFile *f = new TFile("AnalysisResultsNew.root");
+  TFile *f = new TFile("output.root");
   TTree *T = (TTree*)f->Get("T"); //in generale . (e non freccia) se Tfile è un oggetto e NON un puntatore(*)
   
   
@@ -411,5 +411,5 @@ void analisi_tree_1hit(){ //faccio gli istogrammi dal Tree T creato nel file Che
   h2t1_texp_deff_tw_2->Write();
   fo2->Close();
   
-  system("say Ehi you, I have done");
+  system("echo Ehi you, I have done");
 }
