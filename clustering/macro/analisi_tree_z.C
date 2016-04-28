@@ -12,6 +12,8 @@
 #include "TF2.h"
 #include "TMath.h"
 
+Float_t clusterize(Float_t dx,Float_t dz,Float_t time[2],Float_t tot[2],Int_t chan[2],Float_t &timecomb,Float_t &dxcomb,Float_t &dzcomb); // t1_corr - t2_corr
+
 void analisi_tree_z(){ //faccio gli istogrammi dal Tree T creato nel file CheckESD.C
   gROOT->Reset();
   gStyle->SetOptStat(0012);
