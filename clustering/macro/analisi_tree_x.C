@@ -12,6 +12,9 @@
 #include "TF2.h"
 #include "TMath.h"
 
+Float_t clusterize(Float_t dx,Float_t dz,Float_t time[2],Float_t tot[2],Int_t chan[2],Float_t &timecomb,Float_t &dxcomb,Float_t &dzcomb); // t1_corr - t2_corr
+
+
 void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckESD.C
   gROOT->Reset();
   gStyle->SetOptStat(0012);
@@ -673,4 +676,103 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
   fo2->Close();
   
   system("say Ehi you, I have done");
+}
+
+
+Float_t clusterize(Float_t dx,Float_t dz,Float_t time[2],Float_t tot[2],Int_t chan[2],Float_t &timecomb,Float_t &dxcomb,Float_t &dzcomb){
+  timecomb = time[0];
+  dxcomb = dx;
+  dzcomb = dz;
+  dtime = 9999999;
+
+  // check if the are in the same strip.
+  if(Int_t(chan[0]/96) != Int_t(chan[1]/96)) return dtime;
+
+  // preselection on t1 - t2
+  Float_t timewindow = 500;
+  if(TMath::Abs(time[0] - time[1]) > timewindow) return dtime;
+
+  // deltax limit
+  Float_t dxMin = -0.5;
+  Float_t dxMax = 1.25;
+  // deltaz limit
+  Float_t dzMin = -0.5;
+  Float_t dzMax = 1.75;
+
+  // t1 corr corr = axt1 * dx + bxt1;
+  Float_t axt1 = -34;
+  Float_t bxt1 = 29;
+
+  // t2 corr corr = axt2 * dx + bxt2;
+  Float_t axt2 = 0;
+  Float_t bxt2 = 77;
+
+  // t1 corr corr = azt1 * dz + bzt1;
+  Float_t azt1 = -13;
+  Float_t bzt1 = 78;
+
+  // t2 corr corr = azt2 * dx + bzt2;
+  Float_t azt2 = 0;
+  Float_t bzt2 = 123;
+
+  Int_t mode = 0; // mode 1 = x, 2 = z
+
+  Int_t dchan = chan[0] - chan[1]; 
+  if(dchan == -1){
+    mode = 1;
+  }
+  else if(dchan == 1){
+    mode = 1;
+    dx *= -1;
+  }
+  else if(dchan == -48){
+    mode = 2;
+  }
+  else if(chan == 48){
+    mode 2;
+    dz *= -1;
+  }
+
+  if(dx < dxMin) dx = dxMin;
+  else if(dx > dxMax) dx = dxMax;
+  if(dz < dzMin) dz = dzMin;
+  else if(dz > dzMax) dz = dzMax;
+
+  // equalization corr along dx= offsetx + par1x * dx + par2x * dx^2
+  Float_t offsetx = -27;
+  Float_t par1x = -0.047;
+  Float_t par2x = 0.00108;
+  // equalization corr along dz= offsetz + par1z * dz + par2z * dz^2
+  Float_t offsetz = -21.7;
+  Float_t par1z = -0.034;
+  Float_t par2z = 0.00097;
+
+  switch(mode){
+  case 1:
+    time[0] -= axt1*dx + bxt1;
+    time[1] -= axt2*dx + bxt2;
+    dtime = time[0] - time[1];
+    timecomb = (time[0]+time[1])*0.5 - offsetx - par1x*dtime - par2x*dtime*dtime;
+    if(dchan == -1){
+      dxcomb -= 1.25;
+    }
+    else if(dchan == 1){
+      dxcomb += 1.25;
+    }
+    break;
+  case 2:
+    time[0] -= azt1*dx + bzt1;
+    time[1] -= azt2*dx + bzt2;
+    dtime = time[0] - time[1];
+    timecomb = (time[0]+time[1])*0.5 - offsetz - par1z*dtime - par2z*dtime*dtime
+    if(dchan == -48){
+      dxcomb -= 1.75;
+    }
+    else if(dchan == 48){
+      dxcomb += 1.75;
+    }
+    break;
+  }
+
+  return dtime;
 }
