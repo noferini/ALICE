@@ -14,6 +14,8 @@
 
 Float_t clusterize(Float_t dx,Float_t dz,Float_t time1, Float_t time2,Float_t tot[2],Int_t chan[2],Float_t &timecomb,Float_t &dxcomb,Float_t &dzcomb); // t1_corr - t2_corr
 
+void newResiduals(Int_t ch[2],Float_t DeltaX[2],Float_t DeltaZ[2],Float_t time[2],Float_t tot[2]);
+
 
 void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckESD.C
     gROOT->Reset();
@@ -226,7 +228,11 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
                 //Int_t dch = TMath::Abs(ChannelTOF[0]-ChannelTOF[1]);
                 
                 if((ChannelTOF[0]/96)==(ChannelTOF[1]/96) /* così sono nella stessa strip*/ /*&& (ChannelTOF[0]/8)==(ChannelTOF[1]/8) /*così prendo stesso NINO, per vedere cross talk*/ ){
-                    if( TMath::Abs(DeltaZ[0])<1.75 ){ //prendo che il pad machato sia dentro lungo le z
+
+
+		  newResiduals(ChannelTOF,DeltaX,DeltaZ,tempo,TOT);
+
+		  if( TMath::Abs(DeltaZ[0])<1.75 ){ //prendo che il pad machato sia dentro lungo le z
                         
                         Int_t dch = ChannelTOF[0]-ChannelTOF[1];
                         
@@ -500,6 +506,8 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
                 if((ChannelTOF[0]/96)==(ChannelTOF[1]/96) /*&& (ChannelTOF[0]/8)==(ChannelTOF[1])*/){ // così sono nella stessa strip
                     if( TMath::Abs(DeltaZ[0])<1.75){
                         
+		      newResiduals(ChannelTOF,DeltaX,DeltaZ,tempo,TOT);
+
                         Int_t dch = ChannelTOF[0]-ChannelTOF[1];
                         
                         if(TMath::Abs(dch) == 1 && TMath::Abs(tempo[0]-exp_time_pi[0])<800./* per avere circa 3 sigma che sia un pi*/ && TMath::Abs(tempo[0] - tempo[1])<470.){
@@ -596,7 +604,10 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
             if(impulso_trasv>0.8 && impulso_trasv<1.2){ // serve per gli exp time
                 if((ChannelTOF[0]/96)==(ChannelTOF[1]/96)/* && (ChannelTOF[0]/8)==(ChannelTOF[1])*/){ // così sono nella stessa strip
                     if( TMath::Abs(DeltaZ[0])<1.75) {
-                        Int_t dch = ChannelTOF[0]-ChannelTOF[1];
+		      newResiduals(ChannelTOF,DeltaX,DeltaZ,tempo,TOT);
+
+
+		      Int_t dch = ChannelTOF[0]-ChannelTOF[1];
                         
                         if(TMath::Abs(dch) == 1 && TMath::Abs(tempo[0]-exp_time_pi[0])<800./* per avere circa 3 sigma che sia un pi*/ && TMath::Abs(tempo[0] - tempo[1])<470.){
                             Float_t posx = (DeltaX[0])* dch;
@@ -866,3 +877,54 @@ Float_t clusterize(Float_t dx,Float_t dz,Float_t time1, Float_t time2,Float_t to
     
     return dtime;
 }
+
+void newResiduals(Int_t ch[2],Float_t DeltaX[2],Float_t DeltaZ[2],Float_t time[2],Float_t tot[2]){
+  if(tot[1] > tot[0]){
+    Float_t tt,tott;
+    Int_t cht;
+    tt = time[0];
+    tott = tot[0];
+    cht = ch[0];
+
+    time[0] = time[1];
+    tot[0] = tot[1]+0.001;
+    ch[0] = ch[1];
+    time[1] = tt;
+    tot[1] = tott+0.001;
+    ch[1] = cht;
+  }
+
+  Double_t difflog=(log(tot[0])-log(tot[1]))/(log(tot[0])+log(tot[1]));
+                            
+  if(difflog>0.07) difflog=0.07;
+                            
+  Double_t difflog_pol2=-0.-4.59919*difflog+26.5336*difflog*difflog;
+  
+  if((ch[1]%48)-(ch[0]%48) ==1){
+    DeltaX[0]=1.25+difflog_pol2;
+    DeltaX[1]=-1.25+difflog_pol2;
+  }     
+  else if((ch[1]%48)-(ch[0]%48) ==-1){
+    DeltaX[0]=-1.25-difflog_pol2;
+    DeltaX[1]=1.25-difflog_pol2;
+  }
+  else{
+    DeltaX[0]=0;
+    DeltaX[1]=0;
+    }
+  
+  if(((ch[1]/48)%2)-((ch[0]/48)%2) ==1){
+    DeltaZ[0]=1.75+difflog_pol2;
+    DeltaZ[1]=-1.75+difflog_pol2;
+  }     
+  else if(((ch[1]/48)%2)-((ch[0]/48)%2) ==-1){
+    DeltaZ[0]=-1.75-difflog_pol2;
+    DeltaZ[1]=1.75-difflog_pol2;
+  }
+  else{
+    DeltaZ[0]=0;
+    DeltaZ[1]=0;
+  }
+}
+
+
