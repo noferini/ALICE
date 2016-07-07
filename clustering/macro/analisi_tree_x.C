@@ -815,12 +815,12 @@ Float_t clusterize(Float_t dx,Float_t dz,Float_t time1, Float_t time2,Float_t to
     Float_t bxt2 = 20.73;
     
     // t1 corr corr = azt1 * dz + bzt1;
-    Float_t azt1 = -13.01;
-    Float_t bzt1 = 79.94;
+    Float_t azt1 = -180.1;
+    Float_t bzt1 = -219.3;
     
     // t2 corr corr = azt2 * dx + bzt2;
-    Float_t azt2 = 7.265;
-    Float_t bzt2 = 124.5;
+    Float_t azt2 = 2.294;
+    Float_t bzt2 = 133.8;
     
     
     Int_t mode = 0; // mode 1 = x, 2 = z
@@ -852,9 +852,9 @@ Float_t clusterize(Float_t dx,Float_t dz,Float_t time1, Float_t time2,Float_t to
     Float_t par1x = -0.1891;
     Float_t par2x = 0.0009828;
     // equalization corr along dz= offsetz + par1z * dz + par2z * dz^2
-    Float_t offsetz = -21.6;
-    Float_t par1z = -0.04014;
-    Float_t par2z = 0.0009758;
+    Float_t offsetz = -15.93;
+    Float_t par1z = -0.2554;
+    Float_t par2z = 0.0008359;
     
     
     switch(mode){
