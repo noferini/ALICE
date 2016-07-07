@@ -229,11 +229,10 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
                 
                 if((ChannelTOF[0]/96)==(ChannelTOF[1]/96) /* così sono nella stessa strip*/ /*&& (ChannelTOF[0]/8)==(ChannelTOF[1]/8) /*così prendo stesso NINO, per vedere cross talk*/ ){
 
-
-		  newResiduals(ChannelTOF,DeltaX,DeltaZ,tempo,TOT);
-
 		  if( TMath::Abs(DeltaZ[0])<1.75 ){ //prendo che il pad machato sia dentro lungo le z
-                        
+
+                    //newResiduals(ChannelTOF,DeltaX,DeltaZ,tempo,TOT);
+
                         Int_t dch = ChannelTOF[0]-ChannelTOF[1];
                         
                         if(TMath::Abs(dch) == 1 /* seleziono x adiacenti*/ && TMath::Abs(tempo[0]-exp_time_pi[0])<800./* per avere circa 3 sigma che sia un pi*/ && TMath::Abs(tempo[0] - tempo[1])<470.){// poi dovrei farlo anche per 1
@@ -506,7 +505,7 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
                 if((ChannelTOF[0]/96)==(ChannelTOF[1]/96) /*&& (ChannelTOF[0]/8)==(ChannelTOF[1])*/){ // così sono nella stessa strip
                     if( TMath::Abs(DeltaZ[0])<1.75){
                         
-		      newResiduals(ChannelTOF,DeltaX,DeltaZ,tempo,TOT);
+		     //newResiduals(ChannelTOF,DeltaX,DeltaZ,tempo,TOT);
 
                         Int_t dch = ChannelTOF[0]-ChannelTOF[1];
                         
@@ -566,7 +565,7 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
     
     for (Int_t nu=0 ; nu<nentries ; nu++){
         T->GetEntry(nu);
-        //        if(StartTimeRes > 10) continue;
+               if(StartTimeRes > 45) continue;
         
         for(Int_t ip=0;ip<ncluster;ip++){
             tempo[ip] -= StartTime;
@@ -604,7 +603,7 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
             if(impulso_trasv>0.8 && impulso_trasv<1.2){ // serve per gli exp time
                 if((ChannelTOF[0]/96)==(ChannelTOF[1]/96)/* && (ChannelTOF[0]/8)==(ChannelTOF[1])*/){ // così sono nella stessa strip
                     if( TMath::Abs(DeltaZ[0])<1.75) {
-		      newResiduals(ChannelTOF,DeltaX,DeltaZ,tempo,TOT);
+		      //newResiduals(ChannelTOF,DeltaX,DeltaZ,tempo,TOT);
 
 
 		      Int_t dch = ChannelTOF[0]-ChannelTOF[1];
@@ -778,6 +777,16 @@ void analisi_tree_x(){ //faccio gli istogrammi dal Tree T creato nel file CheckE
 
 
 Float_t clusterize(Float_t dx,Float_t dz,Float_t time1, Float_t time2,Float_t tot[2],Int_t chan[2],Float_t &timecomb,Float_t &dxcomb,Float_t &dzcomb){
+    
+    Float_t DeltaX[2];
+    Float_t DeltaZ[2];
+    Float_t tempo[2]={time1,time2};
+    newResiduals(chan,DeltaX,DeltaZ,tempo,tot);
+    dx=DeltaX[0];
+    dz=DeltaZ[0];
+    if(dx>0) dx*=-1;
+    if(dz>0) dz*=-1;
+    
     timecomb = time1;
     dxcomb = dx;
     dzcomb = dz;
@@ -798,12 +807,12 @@ Float_t clusterize(Float_t dx,Float_t dz,Float_t time1, Float_t time2,Float_t to
     Float_t dzMax = 1.75;
     
     // t1 corr corr = axt1 * dx + bxt1;
-    Float_t axt1 = -34.05;
-    Float_t bxt1 = 31.67;
+    Float_t axt1 = -233.8;
+    Float_t bxt1 = -211.6;
     
     // t2 corr corr = axt2 * dx + bxt2;
-    Float_t axt2 = -1.02;
-    Float_t bxt2 = 79.64;
+    Float_t axt2 = -55.25;
+    Float_t bxt2 = 20.73;
     
     // t1 corr corr = azt1 * dz + bzt1;
     Float_t azt1 = -13.01;
@@ -822,14 +831,14 @@ Float_t clusterize(Float_t dx,Float_t dz,Float_t time1, Float_t time2,Float_t to
     }
     else if(dchan == -1){
         mode = 1;
-        dx *= -1;
+       // dx *= -1;
     }
     else if(dchan == 48){
         mode = 2;
     }
     else if(dchan == -48){
         mode = 2;
-        dz *= -1;
+        //dz *= -1;
     }
     
     //Momentaneamente sta aprte è commentata perchè voglio vedere se mitorna esattaemten il tempo che mi viene da corresioni
@@ -839,9 +848,9 @@ Float_t clusterize(Float_t dx,Float_t dz,Float_t time1, Float_t time2,Float_t to
     //else if(dz > dzMax) dz = dzMax;
     
     // equalization corr along dx= offsetx + par1x * dx + par2x * dx^2
-    Float_t offsetx = -24.2;
-    Float_t par1x = -0.05069;
-    Float_t par2x = 0.001075;
+    Float_t offsetx = -23.24;
+    Float_t par1x = -0.1891;
+    Float_t par2x = 0.0009828;
     // equalization corr along dz= offsetz + par1z * dz + par2z * dz^2
     Float_t offsetz = -21.6;
     Float_t par1z = -0.04014;
