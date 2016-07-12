@@ -70,6 +70,7 @@ Float_t smearX = 0.2;
 Float_t smearZ = 0.5;
 Float_t tofres=90.;
 Float_t timewalk=41.;
+Float_t sigmaTOT = 0.05;
 
 void SimulateTime();
 void ReMatch();
@@ -277,16 +278,31 @@ void SimulateTime(){
   Float_t dxttFB,dzttFB;
   Float_t delayx,delayz,delay;
   Float_t resX,resZ,res;
-    Float_t avalanche = gRandom->Gaus(0,sqrt(tofres*tofres-44*44));//time walk ~ 41 ps-> 44 serve per correggere qiuesto
+  Float_t avalanche = gRandom->Gaus(0,sqrt(tofres*tofres-44*44));//time walk ~ 41 ps-> 44 serve per correggere qiuesto
+
+  Float_t totref = 20;
 
   for(Int_t i=0;i < ncluster;i++){
     AliTOFGeometry::GetVolumeIndices(ChannelTOF[i],detId);
+
+    Bool_t isInside = 1;
 
     dxtt = dxt;
     dztt = dzt;
 
     if(detId0[4] != detId[4]) dxtt -= 2.5*(detId[4] - detId0[4]);
     if(detId0[3] != detId[3]) dztt -= 3.5*(detId[3] - detId0[3]);
+
+    Float_t dOut = 0;
+    
+    if(dxtt > 1.25 || dxtt < -1.25){
+      dOut = TMath::Abs(dxtt) - 1.25;
+      isInside = 0;
+    }
+    if(dztt > 1.75 || dztt < -1.75){
+      isInside = 0;
+      if(TMath::Abs(dztt) - 1.75 > dOut) dOut = TMath::Abs(dztt) - 1.75;
+    }
 
     if(detId[3]==1) dztt*=-1;
 
@@ -316,6 +332,11 @@ void SimulateTime(){
     else res=resZ;
 
     tempo[i] = gtime + tw + delay + gRandom->Gaus(0,res)+ avalanche;
+
+    if(isInside)
+      TOT[i] = totref + gRandom->Gaus(0,sigmaTOT);
+    else
+      if(dOut < 0.5) TOT[i] = totref*(1 - dOut) + gRandom->Gaus(0,sigmaTOT);
 
   }
 }
