@@ -84,7 +84,7 @@ Bool_t CheckESD(const char *lista="lista",Bool_t kGRID=0) //per prendere dalla g
 {
 char name[300];
   Int_t ifile = 0;
-  Int_t nmaxfile = 200; // to limit the number of ESD files
+  Int_t nmaxfile = 200000; // to limit the number of ESD files
         
     //T->Branch("nevento",&nevento,"nevento/I");
     //T->Branch("ntracks",&ntracks,"ntracks/I");
