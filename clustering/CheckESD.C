@@ -65,11 +65,12 @@ Int_t itrig;
 Float_t timetrig;
 Float_t smearX = 0.;
 Float_t smearZ = 0.;
+Int_t pdg;
 
-Bool_t isMC = kFALSE;
+Bool_t isMC = kTRUE;
 
 // funzione che riempi gli istogrammi
-Bool_t CheckSingle(const char* esdFileName = "AliESDs.root",Bool_t kGRID=1); // il vecchio CheckESD
+Bool_t CheckSingle(const char* esdFileName = "AliESDs.root",Bool_t kGRID=0); // il vecchio CheckESD
 
 void GetResolutionAtTOF(AliESDtrack *t,Float_t mag,Int_t tofc,Float_t res[3]);
 
@@ -78,17 +79,18 @@ void AddDelay();
 void ReMatch();
 
 // macro principale che fa il loop sugli eventi e scrive il file
-Bool_t CheckESD(const char *lista="wn.xml",Bool_t kGRID=1) //per prendere dalla grid;
+Bool_t CheckESD(const char *lista="lista",Bool_t kGRID=0) //per prendere dalla grid;
 //Bool_t CheckESD(const char *lista="lista",Bool_t kGRID=0) // da locale
 {
 char name[300];
   Int_t ifile = 0;
-  Int_t nmaxfile = 1000; // to limit the number of ESD files
+  Int_t nmaxfile = 200; // to limit the number of ESD files
         
     //T->Branch("nevento",&nevento,"nevento/I");
     //T->Branch("ntracks",&ntracks,"ntracks/I");
     T->Branch("ncluster",&ncluster,"ncluster/I");
     T->Branch("tempo",tempo,"tempo[ncluster]/F");
+    if(isMC) T->Branch("pdg",&pdg,"pdg/I");
     if(isMC) T->Branch("gtime",&gtime,"gtime/F");
     if(isMC) T->Branch("DXtrue",&dxt,"DXtrue/F");
     if(isMC) T->Branch("DZtrue",&dzt,"DZtrue/F");
@@ -229,12 +231,28 @@ Bool_t CheckSingle(const char* esdFileName,Bool_t kGRID)
   if(isMC) ftrkref = TFile::Open(mctrkref.Data());
 
   AliHeader *h = new AliHeader();
+
+
   TFile *fgalice;
   if(isMC) fgalice = TFile::Open(fgal.Data());
   TTree *tgalice;
   if(isMC){
      tgalice = (TTree *) fgalice->Get("TE");
      tgalice->SetBranchAddress("Header",&h);
+  }
+
+  AliRunLoader* runLoader = NULL;
+
+  if(isMC) runLoader = AliRunLoader::Open(fgal.Data());
+  if(runLoader){
+    runLoader->LoadgAlice();
+    gAlice = runLoader->GetAliRun();
+    if (!gAlice) {
+      Error("CheckESD", "no galice object found");
+      return kFALSE;
+    }
+    runLoader->LoadKinematics();
+    runLoader->LoadHeader();
   }
 
   AliESDEvent * esd = new AliESDEvent;
@@ -258,10 +276,18 @@ Bool_t CheckSingle(const char* esdFileName,Bool_t kGRID)
 
   //azzero il contatore delle tracce del TTree T
   //ntracks=0;
-    
+  AliStack* stack=NULL;
+   
   for(Int_t ie=0;ie < nev;ie++)
   {
-    if(isMC) trkref = (TTree *) ftrkref->Get(Form("Event%i/TreeTR",ie));
+    if(runLoader){
+      runLoader->GetEvent(ie);
+      
+      // select simulated primary particles, V0s and cascades
+      stack = runLoader->Stack();
+    }
+    
+      if(isMC) trkref = (TTree *) ftrkref->Get(Form("Event%i/TreeTR",ie));
     tree->GetEvent(ie);
     if(isMC) tgalice->GetEvent(ie);
 
@@ -334,6 +360,8 @@ Bool_t CheckSingle(const char* esdFileName,Bool_t kGRID)
       dedx = track->GetTPCsignal();
 
       Int_t label = TMath::Abs(track->GetLabel());
+      TParticle *part=stack->Particle(label);
+      pdg = part->GetPdgCode();
 
       Int_t TOFlabel[3];
       track->GetTOFLabel(TOFlabel);
@@ -383,7 +411,7 @@ Bool_t CheckSingle(const char* esdFileName,Bool_t kGRID)
       {
           int idummy=track->GetTOFclusterArray()[i];
           
-          AliESDTOFCluster *cl = tofcl->At(idummy);
+          AliESDTOFCluster *cl = (AliESDTOFCluster *) tofcl->At(idummy);
           
           tempo[i]=cl->GetTime();
           tot[i]=cl->GetTOT();
@@ -511,12 +539,21 @@ Bool_t CheckSingle(const char* esdFileName,Bool_t kGRID)
 	}
       }
    }
-      if(TMath::Abs(label) != TOFlabel[0]){
-	mism=1;
-      }
+      
+   if(TMath::Abs(label) != TOFlabel[0]){
+     mism=2;
+     
+     while(TOFlabel[0] != -1 && TOFlabel[0] != label){
+       TOFlabel[0] = stack->Particle(TOFlabel[0])->GetMother(0);
+     }
+     
+     if(label == TOFlabel[0])
+       mism=1;	
+     
+   }
 
-      //AddDelay();
-      T->Fill(); //cout<<"riempio il tree  "<<endl; //Riempio tree "T"
+   //AddDelay();
+   T->Fill(); //cout<<"riempio il tree  "<<endl; //Riempio tree "T"
     
        
             
@@ -532,8 +569,16 @@ Bool_t CheckSingle(const char* esdFileName,Bool_t kGRID)
     
     
   } //end of for(events)
+
+  if(runLoader){
+    runLoader->UnloadHeader();
+    runLoader->UnloadKinematics();
+    delete runLoader;
+  }
+
   esdFile->Close();
   if(isMC) ftrkref->Close();
+  if(isMC) fgalice->Close();
 }
 
 void GetResolutionAtTOF(AliESDtrack *t,Float_t mag,Int_t tofc,Float_t res[3]){
