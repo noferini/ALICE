@@ -59,6 +59,8 @@ Float_t secAngle;
 Float_t cval[5],gtime;
 Float_t dxt,dzt,xgl,ygl,zgl;
 Int_t mism;
+Int_t ntofcl;
+
 Float_t dedx,StartTime,StartTimeRes;
 Float_t interactiontime;
 Int_t itrig;
@@ -113,6 +115,7 @@ char name[300];
     T->Branch("secPhi",&secAngle,"secPhi/F");
     T->Branch("cval",cval,"cval[5]/F");
     T->Branch("mism",&mism,"mism/I");
+    T->Branch("ntofcl",&ntofcl,"ntofcl/I");
     T->Branch("dedx",&dedx,"dedx/F");
     T->Branch("StartTime",&StartTime,"StartTime/F");
     T->Branch("StartTimeRes",&StartTimeRes,"StartTimeRes/F");
@@ -294,6 +297,10 @@ Bool_t CheckSingle(const char* esdFileName,Bool_t kGRID)
     if(isMC) interactiontime = h->GenEventHeader()->InteractionTime()*1E+12;
 
     mag = esd->GetMagneticField();
+
+    AliTOFHeader *tofh = esd->GetTOFHeader();
+    ntofcl = tofh->GetNumberOfTOFclusters();
+    
     esd->ConnectTracks(); // Deve essere sempre chiamato dopo aver letto l'evento (non troverebbe l'ESDevent). Scrivo in tutte le tracce l origine dell evento così poi da arrivare ovunque(tipo al cluster e al tempo quindi).
 
       //Riempio variabile del tree "T"
