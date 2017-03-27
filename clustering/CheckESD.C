@@ -69,10 +69,10 @@ Float_t smearX = 0.;
 Float_t smearZ = 0.;
 Int_t pdg;
 
-Bool_t isMC = kTRUE;
+Bool_t isMC = kFALSE;
 
 // funzione che riempi gli istogrammi
-Bool_t CheckSingle(const char* esdFileName = "AliESDs.root",Bool_t kGRID=0); // il vecchio CheckESD
+Bool_t CheckSingle(const char* esdFileName = "AliESDs.root",Bool_t kGRID=1); // il vecchio CheckESD
 
 void GetResolutionAtTOF(AliESDtrack *t,Float_t mag,Int_t tofc,Float_t res[3]);
 
@@ -81,7 +81,7 @@ void AddDelay();
 void ReMatch();
 
 // macro principale che fa il loop sugli eventi e scrive il file
-Bool_t CheckESD(const char *lista="lista",Bool_t kGRID=0) //per prendere dalla grid;
+Bool_t CheckESD(const char *lista="wn.xml",Bool_t kGRID=1) //per prendere dalla grid;
 //Bool_t CheckESD(const char *lista="lista",Bool_t kGRID=0) // da locale
 {
 char name[300];
@@ -367,8 +367,10 @@ Bool_t CheckSingle(const char* esdFileName,Bool_t kGRID)
       dedx = track->GetTPCsignal();
 
       Int_t label = TMath::Abs(track->GetLabel());
-      TParticle *part=stack->Particle(label);
-      pdg = part->GetPdgCode();
+      if(stack){
+	TParticle *part=stack->Particle(label);
+	pdg = part->GetPdgCode();
+      }
 
       Int_t TOFlabel[3];
       track->GetTOFLabel(TOFlabel);
@@ -547,7 +549,7 @@ Bool_t CheckSingle(const char* esdFileName,Bool_t kGRID)
       }
    }
       
-   if(TMath::Abs(label) != TOFlabel[0]){
+   if(TMath::Abs(label) != TOFlabel[0] && stack){
      mism=2;
      
      while(TOFlabel[0] != -1 && TOFlabel[0] != label){
