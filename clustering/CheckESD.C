@@ -108,7 +108,7 @@ Bool_t CheckESD(const char *lista="wn.xml",Bool_t kGRID=1) //per prendere dalla 
 {
   char name[300];
   Int_t ifile = 0;
-  Int_t nmaxfile = 200000; // to limit the number of ESD files
+  Int_t nmaxfile = 20000; // to limit the number of ESD files
   
   //T->Branch("nevento",&nevento,"nevento/I");
   T->Branch("kTOFout",&TOFout,"kTOFout/I");
@@ -329,9 +329,9 @@ Bool_t CheckSingle(const char* esdFileName,Bool_t kGRID){
       
       // select tracks of selected particles
       if ((track->GetStatus() & AliESDtrack::kITSrefit) == 0) continue;//almeno un hit nell ITS
-      if (track->GetConstrainedChi2() > 1e9) continue; //se brutto X^2
+      if (track->GetConstrainedChi2() > 4) continue; //se brutto X^2
       if ((track->GetStatus() & AliESDtrack::kTOFout) == 0) continue; //se traccia matchata con tof
-      
+      if(track->GetNumberOfTPCClusters() < 70) continue;
       Float_t p =track->P();
       
       itrig = 0;
@@ -353,10 +353,11 @@ Bool_t CheckSingle(const char* esdFileName,Bool_t kGRID){
       
       // select tracks of selected particles
       if ((track->GetStatus() & AliESDtrack::kITSrefit) == 0) continue;//almeno un hit nell ITS
-      if (track->GetConstrainedChi2() > 1e9) continue; //se brutto X^2
+      if (track->GetConstrainedChi2() > 4) continue; //se brutto X^2
       
       //      if ((track->GetStatus() & AliESDtrack::kTOFout) == 0) continue; //se traccia matchata con tof
-      
+      if(track->GetNumberOfTPCClusters() < 70) continue;
+
       TOFout = (track->GetStatus() & AliESDtrack::kTOFout) > 0;
 
       track->GetIntegratedTimes(time);
@@ -401,6 +402,10 @@ Bool_t CheckSingle(const char* esdFileName,Bool_t kGRID){
 	hdtPr->Fill(dtPr);
       }
       
+      charge = track->Charge();
+      phi = track->Phi();
+      eta = track->Eta();
+
       for (int i=0;i<(track->GetNTOFclusters());i++){
 	int idummy=track->GetTOFclusterArray()[i];
         
@@ -410,11 +415,7 @@ Bool_t CheckSingle(const char* esdFileName,Bool_t kGRID){
 	tot[i]=cl->GetTOT();
         
 	ChannelTOF[i]=cl->GetTOFchannel();
-	
-	charge = track->Charge();
-	phi = track->Phi();
-	eta = track->Eta();
-	
+		
 	if(i==0){
 	  GetResolutionAtTOF(track,mag,ChannelTOF[i],res);
 	}
