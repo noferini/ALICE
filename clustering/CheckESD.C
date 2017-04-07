@@ -76,8 +76,10 @@ Float_t impulso;
 Float_t res[3];
 Int_t charge;
 Float_t phi,eta;
+Float_t phiExt,etaExt;
 Float_t secAngle;
 Float_t cval[5],gtime;
+Double_t coord[3];
 Float_t dxt,dzt,xgl,ygl,zgl;
 Int_t mism;
 Int_t ntofcl;
@@ -91,12 +93,13 @@ Float_t smearX = 0.;
 Float_t smearZ = 0.;
 Int_t pdg;
 
-Bool_t isMC = kTRUE;
+Bool_t isMC = kFALSE;
 
 // funzione che riempi gli istogrammi
 Bool_t CheckSingle(const char* esdFileName = "AliESDs.root",Bool_t kGRID=1); // il vecchio CheckESD
 
 void GetResolutionAtTOF(AliESDtrack *t,Float_t mag,Int_t tofc,Float_t res[3]);
+void GetPositionAtTOF(AliESDtrack *t,Float_t mag,Float_t pos[3]);
 
 void MakeTrueRes();
 void AddDelay();
@@ -108,7 +111,7 @@ Bool_t CheckESD(const char *lista="wn.xml",Bool_t kGRID=1) //per prendere dalla 
 {
   char name[300];
   Int_t ifile = 0;
-  Int_t nmaxfile = 20000; // to limit the number of ESD files
+  Int_t nmaxfile = 200000000; // to limit the number of ESD files
   
   //T->Branch("nevento",&nevento,"nevento/I");
   T->Branch("kTOFout",&TOFout,"kTOFout/I");
@@ -134,6 +137,8 @@ Bool_t CheckESD(const char *lista="wn.xml",Bool_t kGRID=1) //per prendere dalla 
   T->Branch("charge",&charge,"charge/I");
   T->Branch("phi",&phi,"phi/F");
   T->Branch("eta",&eta,"eta/F");
+  T->Branch("phiExt",&phiExt,"phiExt/F");
+  T->Branch("etaExt",&etaExt,"etaExt/F");
   T->Branch("secPhi",&secAngle,"secPhi/F");
   T->Branch("cval",cval,"cval[5]/F");
   T->Branch("mism",&mism,"mism/I");
@@ -355,7 +360,7 @@ Bool_t CheckSingle(const char* esdFileName,Bool_t kGRID){
       if ((track->GetStatus() & AliESDtrack::kITSrefit) == 0) continue;//almeno un hit nell ITS
       if (track->GetConstrainedChi2() > 4) continue; //se brutto X^2
       
-      //      if ((track->GetStatus() & AliESDtrack::kTOFout) == 0) continue; //se traccia matchata con tof
+      //if ((track->GetStatus() & AliESDtrack::kTOFout) == 0) continue; //se traccia matchata con tof
       if(track->GetNumberOfTPCClusters() < 70) continue;
 
       TOFout = (track->GetStatus() & AliESDtrack::kTOFout) > 0;
@@ -405,6 +410,10 @@ Bool_t CheckSingle(const char* esdFileName,Bool_t kGRID){
       charge = track->Charge();
       phi = track->Phi();
       eta = track->Eta();
+
+      GetPositionAtTOF(track,mag,coord);
+      phiExt = TMath::ATan2(coord[1],coord[0]);
+      etaExt =  -TMath::Log(TMath::Tan(0.5*TMath::ATan2(sqrt(coord[0]*coord[0]+coord[1]*coord[1]),coord[2])));
 
       for (int i=0;i<(track->GetNTOFclusters());i++){
 	int idummy=track->GetTOFclusterArray()[i];
@@ -535,7 +544,6 @@ void GetResolutionAtTOF(AliESDtrack *t,Float_t mag,Int_t tofc,Float_t res[3]){
     value = trk.PropagateTo(rTOFused,mag);
     //     printf("re-propto = %i (%f)\n",value,rTOF);
   }
-  
   trk.GetCovarianceXYZPxPyPz(cv);
   
   Double_t pos[3];
@@ -689,4 +697,19 @@ void ReMatch(){
     DeltaZ[i] = dz[i];
     ChannelTOF[i] = ch[i];
   }  
+}
+void GetPositionAtTOF(AliESDtrack *t,Float_t mag,Double_t pos[3]){
+  const AliExternalTrackParam* trkExt = t->GetOuterParam();
+  
+  Float_t rTOFused=370;
+  AliExternalTrackParam trk(*trkExt);
+  Int_t value = trk.PropagateTo(370,mag);
+  //   printf("propto = %i\n",value);
+  while(!value && rTOFused > 0){
+    rTOFused-=1;
+    value = trk.PropagateTo(rTOFused,mag);
+    //     printf("re-propto = %i (%f)\n",value,rTOF);
+  }
+  trk.GetXYZ(pos);
+
 }
